@@ -1,19 +1,22 @@
 FROM python:2.7.15-alpine3.6
 
-ENV HOST 0.0.0.0
+COPY requirements.txt /app/requirements.txt
 WORKDIR /app
-COPY . /app
-COPY sshd_config /etc/ssh/
+RUN pip install -r requirements.txt
 
-EXPOSE 5000 2222
+COPY sshd_config /etc/ssh/
 
 RUN apk --update add g++ \
     libffi-dev \
     openssl-dev \
     openssh \
     openrc \
-    bash \
-    && chmod 755 /app/init_container.sh
+    bash 
 
-RUN pip install -r requirements.txt
+COPY . /app
+
+RUN chmod 755 /app/init_container.sh
+
+EXPOSE 5000 2222
+
 CMD ["python", "runserver.py"] 
